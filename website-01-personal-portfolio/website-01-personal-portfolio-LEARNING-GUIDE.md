@@ -1,93 +1,72 @@
-# Noor Haverkamp Portfolio — File-by-File Learning Guide
+# website-01-personal-portfolio — File-by-File Learning Guide
 
-**Project:** `website-01-personal-portfolio`
-**Scope:** 13 core practice files — 1 HTML, 5 CSS, 7 JavaScript
-**Excluded from this sequence:** `share/portfolio-cover.png` (social card image), `README.md` (documentation), and the repository-level shared `src/` folder (favicon and Roboto Mono font referenced from outside this website).
+> **Project:** Mira Halvorsen — Wayfinding & Sign Systems, Rotterdam
+> **Stack:** HTML5 + CSS3. No JavaScript, no CSS framework, no build step.
+> **Core practice files:** 2 (1 HTML, 1 CSS, 0 JavaScript)
 
-This guide is a study roadmap, not an inventory. Every HTML, CSS and JavaScript file in the project appears exactly once, in a continuous order that follows the real dependency graph: document → styling layers → data → independent behaviour modules → feature modules → the entry orchestrator.
+This guide is a study order, not a file inventory. It covers **every** eligible HTML, CSS and JavaScript file in the project, numbered from the first file to open to the last file to finish. Media, artwork and documentation are deliberately excluded.
 
 ---
 
 ## 1. Project Overview
 
-A single-page portfolio for a fictional front-end engineer in Rotterdam. It is built with one HTML document, five hand-written CSS layers and seven native ES modules. There is no framework, bundler, package manager, build step, backend or tracker.
+A single-page portfolio for a fictional environmental graphic designer. The design direction is a **"specimen sheet"**: a sign schedule drawn for a sign designer. Warm newsprint paper, charcoal enamel plates, one signal vermilion, hairline rules, a monospaced annotation layer, numbered tab plates and an asymmetric hero built around a dark destination plate.
 
-**What the page actually does**
+| Field | Detail |
+|---|---|
+| Subject | Portfolio of Mira Halvorsen, wayfinding and sign systems designer |
+| Audience | Architects, transit authorities, hospitals, cultural institutions commissioning signage |
+| Structure | One page: masthead → hero → 01 Work → 02 Approach → 03 Practice → 04 Contact → colophon |
+| Styling model | One hand-authored stylesheet organised into 14 numbered sections |
+| Interactivity | None at runtime. The only state is the URL hash (`#work`, `#approach`, `#practice`, `#contact`) |
+| External dependency | Google Fonts (Archivo, Space Mono), with system fallbacks |
+| Total lines | `index.html` 419 lines · `style.css` 1,355 lines |
 
-- Presents a hero, a status band, and four anchored sections: About, Practice, Work and Contact.
-- Applies a light/dark theme before first paint, persists the choice, and follows the system preference until the visitor overrides it.
-- Turns the header navigation into a mobile sheet below 64 rem, returns focus on close, and highlights the section currently being read.
-- Renders four project records as expandable articles with a category filter, live result count and empty state.
-- Validates a demo contact form locally with inline errors, an error summary, a live character counter and a success panel.
-- Shows the current Rotterdam time and year in three places.
+**What this project teaches well**
 
-**Architectural character**
+- Semantic single-page document structure: landmarks, one `h1`, a clean `h2`/`h3` hierarchy, `figure`/`figcaption`, `dl`/`dt`/`dd`, `time`, `address`.
+- Design tokens as custom properties, and a two-layer palette (paper/ink plus a dark plate layer).
+- Flexbox layout without Grid, `clamp()` fluid type and spacing, logical properties (`margin-inline`, `inset-block`).
+- Pseudo-elements used as real design objects: tab plates, nav underlines, the destination-plate arrow, the survey rule ticks.
+- Responsive design in additive `min-width` bands, with the navigation wrapping instead of hiding behind a menu.
+- Accessibility practice: skip link, 44 px targets, visible focus rings with a dark-band override, reduced-motion support, decorative elements hidden from assistive technology.
+- Print styles as a first-class part of the stylesheet.
 
-| Concern | Approach |
-| --- | --- |
-| Rendering | One static document; project cards built in JS from a data module |
-| Theming | `data-theme` on `<html>`, set by an inline head script, then kept in sync by `theme.js` |
-| State | `localStorage` for the theme only (`portfolio.noor.v1.theme`); everything else is per-visit |
-| Styling | Fixed cascade: variables → base → layout → components → responsive |
-| Modules | Each behaviour file exports a single `init*()` function; `main.js` calls them in order |
-| Accessibility | Skip link, `aria-expanded`/`aria-current`/`aria-invalid`, real error elements, focus moves |
+**Why the sequence has only two entries**
 
-**External dependencies (not practice files):** `index.html` loads Bricolage Grotesque from Google Fonts and a favicon from `../src/favicon/`; `css/variables.css` declares `@font-face` for Roboto Mono from `../../src/fonts/`. All of these sit outside this website folder and are intentionally excluded from the sequence.
+The project genuinely contains two eligible source files. Every HTML, CSS and JS file is listed below exactly once — nothing is skipped, nothing is padded with images, `README.md` or SVG artwork.
 
 ---
 
 ## 2. Actual Project Folder Structure
 
-```
+```text
 website-01-personal-portfolio/
-├── index.html                        ← 01
-├── css/
-│   ├── variables.css                 ← 02
-│   ├── base.css                      ← 03
-│   ├── layout.css                    ← 04
-│   ├── components.css                ← 05
-│   └── responsive.css                ← 06
-├── scripts/
-│   ├── data/
-│   │   └── projects.js               ← 07
-│   ├── clock.js                      ← 08
-│   ├── theme.js                      ← 09
-│   ├── navigation.js                 ← 10
-│   ├── projects.js                   ← 11
-│   ├── contact-form.js               ← 12
-│   └── main.js                       ← 13
-├── share/portfolio-cover.png          (media — excluded)
-└── README.md                          (documentation — excluded)
+├── index.html                                  ← core practice file 01
+├── style.css                                   ← core practice file 02
+├── website-01-personal-portfolio-LEARNING-GUIDE.md
+├── README.md                                   excluded (documentation)
+├── share/
+│   └── Personal-Portfolio_Cover.png            excluded (generated cover image)
+└── assets/
+    ├── favicon.svg                             excluded (media)
+    └── fig-01-line-d.svg                       excluded (media, referenced by figure)
 ```
 
-**Counts verified by recursive scan:** 1 HTML + 5 CSS + 7 JS = **13 eligible files**.
+**Eligible inventory:** 1 HTML + 1 CSS + 0 JS = **2 core practice files**.
 
 ---
 
 ## 3. Website Execution Flow
 
-### Before first paint
-
-1. The `<head>` runs a small **inline** script that reads `localStorage["portfolio.noor.v1.theme"]`, falls back to `prefers-color-scheme`, sets `data-theme` on `<html>` and updates the `theme-color` meta tag. It is deliberately inline and in `<head>` so the correct theme is painted immediately; any storage error falls back to light.
-2. Five stylesheets load in a fixed order — `variables.css → base.css → layout.css → components.css → responsive.css`. Each layer only refines the previous one; nothing is imported inside CSS except the `@font-face` source.
-3. The document is a single page: header, hero (`#top`), status band, `#about`, `#practice`, `#work`, `#contact`, footer.
-
-### Module boot
-
-1. One module script, `scripts/main.js`, loads at the end of `<body>`.
-2. `main.js` imports the five behaviour modules and registers `start()`. If the document is still loading it waits for `DOMContentLoaded` once; otherwise it runs immediately.
-3. `initTheme()` reads the theme already chosen by the inline script, syncs the toggle's `aria-label`/`title` and the `theme-color` meta, wires the toggle, and listens for system-preference changes (ignored once the visitor has stored a choice).
-4. `initNavigation()` wires the mobile menu, then measures which section crosses the 40 % viewport reading line to set `aria-current="location"`.
-5. `initProjects()` builds every project article from `scripts/data/projects.js`, renders filter chips with counts, and applies the default "All" filter.
-6. `initContactForm()` attaches validation, the character counter, the error summary and the success/reset cycle.
-7. `initClock()` writes the time and year immediately and refreshes every 30 seconds.
-
-### Behaviour flow
-
-- **Theme:** inline head script → `initTheme` → toggle click → `applyTheme(next, { persist: true })` → `data-theme` + meta + storage.
-- **Menu:** toggle → `openMenu()`/`closeMenu()` → `hidden`, `aria-expanded`, `body.menu-open`, document-level Escape and outside-click listeners added/removed together.
-- **Work:** data module → `buildProject()` → `applyFilter()` hides non-matching articles, updates `#work-count` and reveals `#projects-empty`; a click on one `Details` button closes the others before opening.
-- **Contact:** submit → `validateAll()` → either error summary (focus moved) or success panel; input/blur revalidates only after an attempt or once a field is already invalid.
+1. **Request** — the browser loads `index.html`; there is no router, no bundler and no server-side step.
+2. **Head parsing** — the document title and description load, then the SVG favicon, then two `preconnect` hints and the Google Fonts stylesheet, then the local `style.css`. Because `style.css` is last, its rules win over the font stylesheet without `!important`.
+3. **Document build** — skip link → survey rule → sticky masthead (wordmark + four numbered in-page links) → `main` with five sections (hero, work, approach, practice, contact) → colophon footer.
+4. **Style application** — the single stylesheet cascades in its own order: tokens, reset, typography, layout primitives, then one block per page region, then motion, then responsive bands, then reduced-motion and print.
+5. **No script execution** — no event listeners, no menu toggle, no scroll spy, no form. Navigation is plain fragment linking; `:target` highlights the section that the hash points at, and only above 768 px.
+6. **Responsive resolution** — styles widen progressively at 480, 640, 768, 1024, 1280 and 1536 px, with one `max-width: 639px` correction for the specimen image and the plate switching from a wide band to a portrait panel at 640 px.
+7. **Motion** — a single `rise` animation with a `--i` stagger plays on hero elements on load; `breathe` and `marker` loop on the status lamp and plate marker. Smooth scrolling is opt-in via `prefers-reduced-motion: no-preference`, and everything is disabled under `reduce`.
+8. **Output** — static HTML and CSS. The page is complete with fonts blocked, and prints as a clean document.
 
 ---
 
@@ -95,67 +74,141 @@ website-01-personal-portfolio/
 
 | No. | Learning Phase | Exact File Path | Type | What to Study |
 |---|---|---|---|---|
-| 01 | Project Entry | index.html | HTML | Understand the single-page document: the inline pre-paint theme script, the five-stylesheet cascade, header controls (theme toggle, menu, clock), the five sections and their anchors, the Work/filter/empty placeholders, the form and success panel, and the single `scripts/main.js` entry point. |
-| 02 | CSS Foundation | css/variables.css | CSS | Understand the "Working Drawings" token system: `@font-face` for Roboto Mono, paper and dark-theme colour pairs, the `clamp()` type scale, spacing, radii, durations, easing, z-index layers and header height. |
-| 03 | CSS Foundation | css/base.css | CSS | Understand the reset, document defaults, base typography and heading rhythm, focus-visible treatment, and the utility classes (including the `.reveal` entrance pattern used with `--i`). |
-| 04 | CSS Foundation | css/layout.css | CSS | Understand structural composition: the `.shell` container, sticky header geometry, hero grid, section grid with its numbered rail, status band, work and contact grids, and footer layout. |
-| 05 | CSS Foundation | css/components.css | CSS | Understand reusable pieces: brand, buttons, theme and menu toggles, nav links, the plate and spec strip, principles, skill groups, project rows and expandable detail panel, filter chips, form fields/errors, success panel and footer revision block. |
-| 06 | CSS Foundation | css/responsive.css | CSS | Understand breakpoint-only structural changes: the fixed mobile navigation sheet below 64 rem, the desktop inline nav, collapsible section grids and the fluid behaviour that keeps the page usable from 320 px upward. |
-| 07 | Data Layer | scripts/data/projects.js | JavaScript | Understand the data contract: `projectCategories` and four project records with `id`, `category`, `year`, `role`, image path and alt text, summary, brief, constraint, outcome and stack — the source of truth the work section renders. |
-| 08 | Independent Module | scripts/clock.js | JavaScript | Understand the smallest module and the project's `init*()` convention: `Intl.DateTimeFormat` pinned to `Europe/Amsterdam`, updating `#local-time`, `#footer-time` (plus `datetime`), `#footer-year`, and the 30-second refresh. |
-| 09 | Independent Module | scripts/theme.js | JavaScript | Understand stateful theming: reading the versioned storage key, `applyTheme` updating `data-theme`, the toggle's accessible name and the `theme-color` meta, persistence with failure tolerance, and ignoring system changes after an explicit choice. |
-| 10 | Shared Behaviour | scripts/navigation.js | JavaScript | Understand the mobile menu lifecycle (`hidden`, `aria-expanded`, `body.menu-open`, Escape, outside click, focus return), viewport synchronisation via `matchMedia` plus `ResizeObserver` and `requestAnimationFrame` throttling, and the scroll-spy that sets `aria-current`. |
-| 11 | Feature Module | scripts/projects.js | JavaScript | Understand data-driven rendering: building articles, media and detail regions with `createElement`, accessible toggles with `aria-controls`, filter chips with counts and `aria-pressed`, single-open accordion logic, live result count and the empty/reset state. |
-| 12 | Feature Module | scripts/contact-form.js | JavaScript | Understand form behaviour: per-field rules, `aria-invalid` plus `hidden` error elements, the error summary with focus and jump links, the message counter, conditional revalidation, and the success/reset cycle that restores focus to the first field. |
-| 13 | Final Integration | scripts/main.js | JavaScript | Understand the composition root: the five imports, the ordered `start()` calls that define boot sequence, and the `DOMContentLoaded`-or-immediate guard that makes the entry point safe at any load state. |
+| 01 | Project Entry | `index.html` | HTML | Read the document top to bottom in visitor order: head metadata and its dependencies, then skip link, masthead, hero, the four numbered sections and the colophon. Learn how landmarks, a single `h1`, `h2`/`h3` sections and in-page anchors hold a one-page portfolio together without JavaScript. |
+| 02 | Styling and Presentation | `style.css` | CSS | Work through the 14 numbered sections in file order, from tokens to print, tracing every selector back to the class it styles in `index.html`. Learn how one stylesheet carries the whole specimen-sheet identity, including the component states, the responsive bands and the motion preferences. |
 
-**Total: 13 numbered entries — matching the 13 eligible source files exactly.**
+**File 01 is where you start. File 02 is the final core source file to study.**
 
 ### Why this order
 
-- **01: the document first.** `index.html` names every section, control and placeholder; reading it first gives each later module a destination to hang on.
-- **02 → 06: the styling cascade in load order.** Tokens exist before base rules, base before layout, layout before components, and breakpoints last — the same order the browser applies, so each file's selectors are already familiar when the next one arrives.
-- **07: data before behaviour.** `scripts/data/projects.js` has no imports and is consumed directly by the work section; studying it here means the rendering module later has nothing unexplained in it.
-- **08 → 09: the two smallest independent modules.** `clock.js` teaches the `init*()` pattern with no state; `theme.js` adds the one piece of persisted state and the pre-paint handshake with `index.html`.
-- **10: shared behaviour with lifecycle.** `navigation.js` is where event listeners are added and removed, media queries are watched, and focus is managed — concepts reused later.
-- **11 → 12: the two feature modules, in dependency order.** `projects.js` depends on the data file you just read; `contact-form.js` is self-contained but the densest validation and accessibility code, so it comes after the rendering patterns.
-- **13: the entry point last, because it is only legible once you know what it starts.** `main.js` contains no logic of its own; it is the file that explains the boot order you have already studied module by module.
+1. **`index.html` first** — it is the only entry point and the only place where the project's content model exists. Every class name in `style.css` is meaningless until you have seen the element it decorates, and the document order (work → approach → practice → contact) is the order the CSS sections follow.
+2. **`style.css` second** — the stylesheet is written as a top-down system: tokens define the vocabulary, the reset and typography establish defaults, layout primitives set the page grid, and each later section styles one region of the HTML you just read. Reading it in file order means every rule arrives with its dependencies already explained.
+
+There is no JavaScript phase, because the project contains no `.js` files.
+
+### Study focus for 01 — `index.html`
+
+Read in these groups, in this order:
+
+- **Head (lines 1–41).** Character set and viewport; title and description written as a real pitch; author and `theme-color`; canonical placeholder; SVG favicon; font `preconnect` + Archivo/Space Mono stylesheet; then the local `style.css`. Note that Open Graph and Twitter/X cards reuse the same title, description and a `share/` image URL, and that every decorative requirement is declared here rather than in script.
+- **Skip link and survey rule (43–47).** The first focusable element points at `#main`; the coordinate strip is `aria-hidden` decoration that only appears at large sizes.
+- **Masthead (46–82).** `header` + wordmark link to `#top` + `nav aria-label="Sections of this page"`. Each of the four links carries a visible two-digit number and a label, which is the navigation concept the CSS later turns into tab plates.
+- **Hero (87–140).** An `h1` split into two spans for the two-line setting; eyebrow, statement, bio and availability line; a `mailto:` plate button with an arrow span; a text link; and the destination plate — a link styled as an enamel sign, with top marker, CSS-drawn arrow, label and meta line, plus a `figcaption`-style caption underneath.
+- **01 Work (143–241).** `section` + `aria-labelledby`, a `data-ghost="01"` attribute consumed by CSS, an `ol.schedule` of four `li.project` rows using `time datetime`, and a `figure`/`figcaption` specimen whose `img` carries real `width`/`height`, `loading="lazy"` and `decoding="async"`.
+- **02 Approach (244–296).** An ordered list of three principles; study how number, heading, paragraph and deliverable line are separated into semantic blocks rather than one blob of text.
+- **03 Practice (299–370).** The two-column practice layout: biography, a `ul.capabilities` of six numbered capabilities, and a `dl.facts` built from `div` rows wrapping each `dt`/`dd` pair.
+- **04 Contact (373–407).** The dark band: `mailto:` email link, `tel:` phone link, machine-readable `address`, and studio hours.
+- **Colophon (411–418).** Coordinates, typeface credit and the line that states the constraint plainly: "HTML5 and CSS3, no JavaScript".
+
+Keep a scratch list of every class you meet, grouped by region. That list is your map for file 02.
+
+### Study focus for 02 — `style.css`
+
+Read the file's own 14 sections in order; do not jump to the responsive block first.
+
+- **`01 Tokens` (lines 24–69).** Three colour groups (paper/ink, plate, accent), two type stacks, a 4 px spacing scale, layout limits (`--container`, `--reading`, `--rail`, `--hairline`), motion durations and easing, and `--focus`. Every later value should be traceable to one of these.
+- **`02 Reset and base` (70–185).** `box-sizing`, body type defaults, list and image normalisation, link underline offsets, `::selection`, `:focus-visible` with a plate-coloured override for dark bands, the off-screen skip link that slides in on focus, and `scroll-margin-block` so anchored headings clear the sticky masthead.
+- **`03 Typography` (186–247).** Fluid `clamp()` sizes, tight display leading and negative tracking, the container-query (`cqi`) refinement on the name, `text-wrap: balance`/`pretty`, tabular numerals for the annotation layer, and the shared `.subhead` mono style.
+- **`04 Layout primitives` (248–282).** `.shell` (`min(100% - gutters, container)`), `.section` padding, hairline top borders and scroll margin, and the `.tab` plate.
+- **`05 Masthead and index navigation` (283–410).** Sticky positioning, wrapping flex header, wordmark square drawn with `::before`, the nav underline built from a scaled `::after`, 44 px minimum targets and hover/focus colour changes.
+- **`06 Hero and destination plate` (411–678).** The faint 4 rem grid drawn with two gradients and faded by `mask-image`; the pulsing status lamp; the plate button's sliding fill and 1 px active nudge; the destination plate with `clip-path` arrow, hover translation and a divider built from a semi-transparent border.
+- **`07 Work schedule and specimen` (679–775).** Schedule rows as flex columns that become a four-part line at 768 px, meta items separated by `::before` bullets, the specimen frame, and the wide-bleed treatment on small screens.
+- **`08 Approach` (776–826).** The tinted band, principles as stacked rows, the large vermilion numeral, and the mono deliverable line.
+- **`09 Practice` (827–912).** Bio/aside flex split, the capabilities list with hover numerals, and the definition list as label/value rows with hairline separators.
+- **`10 Contact` (913–984).** Complete dark-band inversion: background, text, tab, ghost numeral and focus rings all switch layers.
+- **`11 Colophon` (985–1014).** The compact three-part footer row.
+- **`12 Motion` (1015–1071).** `rise`, `breathe` and `marker` keyframes, the `--i` index assignments, the staggered load sequence, and smooth scrolling gated behind `no-preference`.
+- **`13 Responsive` (1072–1304).** Six additive `min-width` bands plus one `max-width` correction: navigation unwraps, the plate becomes a 4:7 portrait, the ghost numeral and `:target` highlight appear, project and principle rows turn horizontal, the survey rail and body offset arrive, and column widths settle.
+- **`14 Reduced motion and print` (1305–1355).** The global animation/transition kill switch, arrow transforms removed, the lamp ring hidden, and a print sheet that drops chrome and dark backgrounds.
+
+After each section, return to `index.html` and find the exact elements it targets. That round trip is the actual exercise.
 
 ---
 
 ## 5. Learning Checkpoints
 
-**Checkpoint A — after 01**
-Can you name every section id in anchor order, the control ids the JS will look for (`theme-toggle`, `menu-toggle`, `local-time`, `project-list`, `contact-form`, …), and explain why the theme script sits inline in `<head>` rather than in `main.js`?
+### Checkpoint 1 — After file 01 (`index.html`)
 
-**Checkpoint B — after 06**
-Can you assign five new style rules to the correct CSS file, and say why the desktop navigation needs no `hidden` attribute but the mobile one does? Can you find the token that drives spacing and the one that drives the display heading size?
+You should be able to answer without opening the CSS:
 
-**Checkpoint C — after 07**
-Can you write a fifth project record from memory, matching every field the renderer expects? Which fields are rendered where, and which ones only appear inside the expanded detail panel?
+- What is the single `h1`, and how do the four sections share one `h2` level with `h3` items inside?
+- Which landmarks exist, and what does the skip link skip to?
+- Why are the navigation numbers inside the links rather than generated by CSS?
+- What does `data-ghost="01"` do, and where is it consumed?
+- Why are `width` and `height` set on the specimen image, and what do `loading`/`decoding` change?
+- Which elements are `aria-hidden`, and what is the accessibility reason in each case?
+- What happens when a visitor clicks "Work" with JavaScript disabled?
 
-**Checkpoint D — after 10**
-Describe the three states of the menu (`hidden`, `aria-expanded`, `body.menu-open`) and explain which listener cleans up what. Explain how the scroll spy decides the "current" section, and why `aria-current` is better than a colour-only highlight.
+### Checkpoint 2 — After file 02, sections 01–04
 
-**Checkpoint E — after 12**
-Explain the two conditions that allow a field to be revalidated while typing. Explain why the error summary is `role="alert"` with `tabindex="-1"`, and trace what happens to focus on a failed submit, a successful submit and the reset button.
+- Point to the token that controls each of: paper background, accent, container width, reading measure, focus ring.
+- Explain how `.shell` centres content and why it uses `min()` rather than a fixed width.
+- Explain why `scroll-margin-block` exists on sections and links.
+- Describe the difference between the paper focus ring and the contact-band focus ring, and where the override lives.
 
-**Checkpoint F — after 13**
-Narrate the full boot sequence in order and predict what would break if `initProjects()` ran before `initNavigation()` or before the DOM was ready.
+### Checkpoint 3 — After file 02, sections 05–11
+
+- Rebuild the nav underline and the wordmark square from memory; name every pseudo-element involved.
+- Explain how the destination-plate arrow is drawn without an image.
+- Explain how the plate button's background slides in, and why `isolation` and `overflow` matter.
+- Identify the two places where a hover state also needs a keyboard equivalent, and confirm both exist.
+- Explain how `.project__meta` gets its `·` separators without extra markup.
+
+### Checkpoint 4 — After file 02, sections 12–14
+
+- List the animation stagger order in the hero and the custom property that produces it.
+- Name every breakpoint and the one thing each band changes first.
+- Explain why smooth scrolling is inside `no-preference` rather than being disabled inside `reduce`.
+- Explain what the print sheet removes and why the contact section needs its own print override.
+- Confirm the page still reads correctly with fonts blocked, motion reduced, and stylesheet printed.
+
+### Checkpoint 5 — Cross-file trace
+
+Pick three components and trace them end to end, markup → tokens → layout → component rules → responsive band → motion → print:
+
+1. `.dest-plate` (hero plate)
+2. `.project` (work schedule row)
+3. `.contact__email` (dark-band email link)
+
+If you can reproduce each trace without searching the file, the project is learned.
 
 ---
 
 ## 6. Final Mastery Checklist
 
-- [ ] I can explain the page as one document plus five stylesheets plus seven modules, in under a minute.
-- [ ] I can place any style rule in the correct one of the five CSS layers and justify it.
-- [ ] I can explain the pre-paint theme handshake between `index.html` and `theme.js`.
-- [ ] I can describe the `init*()` module convention and how `main.js` sequences it.
-- [ ] I can add a fifth project to the data file and predict exactly what appears on the page.
-- [ ] I can explain every ARIA attribute the page sets (`aria-expanded`, `aria-controls`, `aria-current`, `aria-invalid`, `aria-pressed`, `aria-live`) and which file sets it.
-- [ ] I can trace a menu open/close cycle including focus restoration and listener cleanup.
-- [ ] I can explain the form's validation, error-summary and success states without opening the file.
-- [ ] I can point to every place `localStorage` is read or written, and what happens when it throws.
-- [ ] I can rebuild one module from scratch and wire it into `main.js` without touching the others.
+**Document structure**
 
-If any item fails, return to the numbered entry whose phase it belongs to and re-read only that file — the sequence is ordered so the answer always sits in a file you have already studied.
+- [ ] I can explain the landmark layout and heading outline of `index.html` from memory.
+- [ ] I can list every semantic element used (`header`, `nav`, `main`, `section`, `figure`, `figcaption`, `ol`, `ul`, `dl`, `time`, `address`, `footer`) and justify each one.
+- [ ] I understand the metadata block: title, description, canonical, `theme-color`, Open Graph and Twitter cards.
+- [ ] I know why this page needs no JavaScript, and what would break if a drawer menu were added.
+
+**Styling system**
+
+- [ ] I can name the token groups and give an example value from each.
+- [ ] I understand the two palette layers: paper/ink and plate/plate-ink, and how the contact band inverts them.
+- [ ] I can explain the reset choices and why `:focus-visible` is used instead of `:focus`.
+- [ ] I can explain the `.shell` width formula and the spacing scale.
+- [ ] I can describe how typography stays fluid with `clamp()` and how the name responds to its container with `cqi`.
+
+**Components and state**
+
+- [ ] I can rebuild the tab plate, nav underline, wordmark square and plate arrow using pseudo-elements and `clip-path`.
+- [ ] I can explain the plate button's sliding fill, arrow nudge and active state.
+- [ ] I know how `:target` highlights the active section and at which width it activates.
+- [ ] I can explain every hover state and its keyboard/focus counterpart.
+- [ ] I understand the `--i` stagger and the three keyframe animations.
+
+**Responsive and resilience**
+
+- [ ] I can list the breakpoints in order and the main change at each.
+- [ ] I can explain why the mobile navigation wraps instead of hiding.
+- [ ] I understand the 44 px target rule and where it is enforced.
+- [ ] I can explain reduced-motion handling and the print stylesheet.
+- [ ] I have opened the page at 360 px, 768 px, 1280 px and in print preview and can predict each layout before looking.
+
+**Completion**
+
+- [ ] I have read both core files end to end, in the numbered order above.
+- [ ] I have traced all three cross-file components.
+- [ ] I can rebuild the page's structure and visual system from a blank file without copying.
