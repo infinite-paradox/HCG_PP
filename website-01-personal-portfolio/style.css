@@ -67,3 +67,180 @@
   --dur-slow: 520ms;
   --focus: 2px;
 }
+
+/* ========================= 02 Reset and Base ========================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(185, 61, 40, 0.16);
+}
+
+body {
+  margin: 0;
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  font-weight: 400;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+p,
+figure,
+blockquote,
+dl,
+dd,
+address {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 0.0625rem;
+  text-underline-offset: 0.25rem;
+  touch-action: manipulation;
+}
+
+/* keep a focused link clear of the sticky masthead when tabbing upwards */
+a[href] {
+  scroll-margin-block: 11rem;
+}
+
+p a,
+address a {
+  text-decoration-color: var(--rule);
+  transition:
+    color var(--dur-fast) var(--ease),
+    text-decoration-color var(--dur-fast) var(--ease);
+}
+
+p a:hover,
+address a:hover {
+  color: var(--accent-deep);
+  text-decoration-color: var(--accent);
+}
+
+::selection {
+  background-color: var(--accent);
+  color: var(--paper);
+}
+
+:focus-visible {
+  outline: var(--focus) solid var(--ink);
+  outline-offset: 0.25rem;
+}
+
+.section--contact :focus-visible,
+.colophon :focus-visible {
+  outline-color: var(--plate-ink);
+}
+
+.skip-link {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: var(--gutter);
+  z-index: 20;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--ink);
+  column-rule: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14rem;
+  text-decoration: none;
+  transform: translateY(-110%);
+  transition: transform var(--dur) var(--ease);
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* Survey rule: a fixed measuring strip on the left edge of large screens. */
+.survey-rule {
+  display: none;
+}
+
+/* ========================= 03 Typography ========================= */
+.hero__name {
+  font-size: clamp(2.6rem, 10vw, 7.25rem);
+  font-size: clamp(2.6rem, 15cqi, 7.25rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+
+.hero__name span {
+  display: block;
+}
+
+.hero__name span + span {
+  margin-inline-start: 0.12em;
+}
+
+.section__title,
+.project_title,
+.principle__body h3,
+.desk-plate__label {
+  text-wrap: balance;
+}
+.section__title {
+  font-size: clamp(1.7rem, 4.2vw, 2.9rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.section__intro {
+  max-width: 46ch;
+  margin-block-start: var(--s-4);
+  color: var(--ink-soft);
+}
+
+/* Numerals in the annotation layer stay column-aligned */
+.index-nav__num,
+.project__fig,
+.project__meta,
+.principle__num,
+.capabilities__num,
+.facts dt,
+.contact__phone,
+.dest-plate__meta,
+.specimen__label,
+.colophon__coords {
+  font-variant-numeric: tabular-nums;
+}
+
+.subhead {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-width: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
